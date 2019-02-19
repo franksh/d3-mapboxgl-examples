@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Earthquakes map</title>
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <link
+      href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+      mapboxgl.accessToken = "INSERT_YOUR_TOKEN";
+
+      var map;
+
+      const data = d3
+        .json(
+          "https://gist.githubusercontent.com/franksh/0a1dcf63a0976c78c1f7869a5abf9775/raw/c256896524926042d6d7091154c7523758d0480c/earthquakes.json",
+          function(d) {
+            return d;
+          }
+        )
+        .then(createMap)
+        .then(createDots);
+
+      function createMap(data) {
+        map = new mapboxgl.Map({
+          container: "map", // container id
+          style: "mapbox://styles/mapbox/light-v9", // stylesheet location
+          zoom: 1 // starting zoom
+        });
+
+        map.on("viewreset", render);
+        map.on("move", render);
+        map.on("moveend", render);
+
+        // Optional: Modify map with d3
+        d3.selectAll(".mapboxgl-canvas")
+          .style("opacity", 1)
+          .style("position", "absolute")
+          .style("z-index", 1);
+        return data;
+      }
+
+      function createDots(data) {
+        var container = map.getCanvasContainer();
+
+        var svg = d3
+          .select(container)
+          .append("svg")
+          .attr("width", "100%")
+          .attr("height", "2000")
+          // Ensure d3 layer in front of map
+          .style("position", "absolute")
+          .style("z-index", 10);
+
+        let dots = svg
+          .selectAll("circle")
+          .data(data.features)
+          .enter()
+          .append("circle")
+          .attr("class", "circle")
+          .attr("r", 5)
+          .style("opacity", 0.7)
+          .style("fill", "#ff3636");
+
+        render();
+      }
+
+      // Projection method:
+      // Project geojson coordinate to the map's current state
+      function project(d) {
+        return map.project(new mapboxgl.LngLat(d[0], d[1]));
+      }
+
+      // Render method redraws lines
+      function render() {
+        d3.selectAll(".circle")
+          .attr("cx", function(d) {
+            return project(d.geometry.coordinates).x;
+          })
+          .attr("cy", function(d) {
+            return project(d.geometry.coordinates).y;
+          });
+      }
+    </script>
+  </body>
+</html>
