@@ -3,7 +3,7 @@
 # d3-mapbox-examples
 
 In this repo I've collected some examples on how to combine
-mapboxgl (beatiful vector-tiled maps!) with the plotting
+mapboxgl (beautiful vector-tiled maps!) with the plotting
 power of d3.
 
 See also my [tutorial on combining d3 and mapbox](http://franksh.com/posts/d3-mapboxgl/)
@@ -12,4 +12,4 @@ See also my [tutorial on combining d3 and mapbox](http://franksh.com/posts/d3-ma
 
 Download the repo and open the files in your favorite browser.
 
-Note that you need a valid mapbox access token at the beginning of each script.
+Note that you need to insert a valid mapbox access token at the beginning of each script.
